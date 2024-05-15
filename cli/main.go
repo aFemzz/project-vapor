@@ -36,8 +36,9 @@ func main() {
 			}
 		case "2":
 			handler.Register()
-		case "3":
+		case "0":
 			fmt.Println("Exit program...")
+			return
 		default:
 			fmt.Println("Input is invalid!")
 		}
