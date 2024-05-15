@@ -21,6 +21,9 @@ func Login() (entity.User, error) {
 	}
 	defer db.Close()
 
+	fmt.Println("======================================")
+	fmt.Println("             	 LOGIN ")
+	fmt.Println("======================================")
 	reader := bufio.NewReader(os.Stdin)
 
 	fmt.Print("Insert your email: ")
@@ -45,6 +48,6 @@ func Login() (entity.User, error) {
 	}
 
 	u.Email = email
-	
+
 	return u, nil
 }
