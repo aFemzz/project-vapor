@@ -30,7 +30,7 @@ func UserMenu(user entity.User) {
 		input = strings.TrimSpace(input)
 		switch input {
 		case "1":
-			handler.PurchaseGame()
+			handler.PurchaseGame(user)
 		case "2":
 			handler.Cart(user)
 		case "3":
