@@ -33,7 +33,7 @@ func UserMenu(user entity.User) {
 		case "1":
 			handler.PurchaseGame()
 		case "2":
-			handler.Cart()
+			handler.Cart(user)
 		case "3":
 			handler.Library()
 		case "4":
