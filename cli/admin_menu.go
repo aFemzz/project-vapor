@@ -41,6 +41,7 @@ func AdminMenu(admin entity.User) {
 			utility.EnterToContinue()
 		case "4":
 			handler.ReportOrder()
+			utility.EnterToContinue()
 		case "5":
 			handler.UserReport()
 		case "6":
