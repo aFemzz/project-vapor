@@ -12,7 +12,7 @@ import (
 func AdminMenu(admin entity.User) {
 	reader := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Println("Welcome Admin , ", admin.Username)
+		fmt.Println("Welcome Admin,", admin.Username)
 		fmt.Println()
 		fmt.Println("Choose menu:")
 		fmt.Println("1. Add New Game")
