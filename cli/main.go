@@ -15,7 +15,7 @@ func main() {
 		fmt.Println()
 		fmt.Println("1. Login")
 		fmt.Println("2. Register")
-		fmt.Println("3. Exit")
+		fmt.Println("0. Exit")
 		fmt.Println()
 		fmt.Print("Masukkan nomor (1/2): ")
 		input, _ := reader.ReadString('\n')
