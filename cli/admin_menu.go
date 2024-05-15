@@ -38,6 +38,7 @@ func AdminMenu(admin entity.User) {
 			utility.EnterToContinue()
 		case "3":
 			handler.DeleteGame()
+			utility.EnterToContinue()
 		case "4":
 			handler.ReportOrder()
 		case "5":
