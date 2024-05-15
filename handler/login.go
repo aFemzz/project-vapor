@@ -44,5 +44,7 @@ func Login() (entity.User, error) {
 		return u, fmt.Errorf("password or user doesn't match")
 	}
 
+	u.Email = email
+	
 	return u, nil
 }

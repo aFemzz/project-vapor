@@ -1,5 +1,7 @@
 package handler
 
-func VaporWallet() {
+import "vapor/entity"
+
+func VaporWallet(u entity.User) {
 
 }

@@ -38,9 +38,9 @@ func UserMenu(user entity.User) {
 		case "4":
 			handler.TopSellingGame()
 		case "5":
-			handler.VaporWallet()
+			handler.VaporWallet(user)
 		case "6":
-			handler.AddFunds()
+			handler.AddFunds(user)
 		case "7":
 			fmt.Println("Logged out ... ")
 			return
