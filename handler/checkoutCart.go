@@ -3,7 +3,6 @@ package handler
 import (
 	"database/sql"
 	"fmt"
-	"vapor/utility"
 )
 
 func CheckoutCart(db *sql.DB, orderId int, totalPrice float64, username string) {
@@ -26,7 +25,6 @@ func CheckoutCart(db *sql.DB, orderId int, totalPrice float64, username string) 
 
 	if saldo < totalPrice {
 		fmt.Println("You have no enough balance for this transaction, please add your funds")
-		utility.EnterToContinue()
 		return
 	}
 	saldo -= totalPrice

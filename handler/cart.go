@@ -16,6 +16,8 @@ func Cart(user entity.User) {
 		fmt.Println(err)
 		return
 	}
+	defer db.Close()
+
 	reader := bufio.NewReader(os.Stdin)
 
 	query := "SELECT od.order_id, g.title, g.price, od.is_purchased FROM users u JOIN orders o ON u.user_id = o.user_id JOIN order_details od ON o.order_id = od.order_id JOIN games g ON od.game_id = g.game_id WHERE u.username = ? AND od.is_purchased = ?"
