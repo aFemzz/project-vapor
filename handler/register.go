@@ -21,6 +21,9 @@ func Register() {
 	}
 	defer db.Close()
 
+	fmt.Println("======================================")
+	fmt.Println("         REGISTER NEW ACCOUNT ")
+	fmt.Println("======================================")
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Insert your username: ")
 	username, _ := reader.ReadString('\n')
