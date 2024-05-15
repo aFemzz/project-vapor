@@ -7,6 +7,7 @@ import (
 	"strings"
 	"vapor/entity"
 	"vapor/handler"
+	"vapor/utility"
 )
 
 func AdminMenu(admin entity.User) {
@@ -34,6 +35,7 @@ func AdminMenu(admin entity.User) {
 			handler.AddGame()
 		case "2":
 			handler.UpdateGame()
+			utility.EnterToContinue()
 		case "3":
 			handler.DeleteGame()
 		case "4":
