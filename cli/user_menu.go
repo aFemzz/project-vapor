@@ -12,10 +12,9 @@ import (
 func UserMenu(user entity.User) {
 	reader := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Println("Welcome to Vapor , ", user.Username)
+		fmt.Printf("Welcome to Vapor, %v\n", user.Username)
 		fmt.Println()
 		fmt.Println("Choose menu:")
-		// fmt.Println("1. List Game")
 		fmt.Println("1. Purchase Game")
 		fmt.Println("2. Cart")
 		fmt.Println("3. Library")
