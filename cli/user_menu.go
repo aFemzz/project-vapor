@@ -39,6 +39,7 @@ func UserMenu(user entity.User) {
 			handler.TopSellingGame()
 		case "5":
 			handler.VaporWallet(user)
+
 		case "6":
 			handler.AddFunds(user)
 		case "7":
