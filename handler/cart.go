@@ -18,9 +18,9 @@ func Cart(user entity.User) {
 	}
 	reader := bufio.NewReader(os.Stdin)
 
-	query := "SELECT od.order_id, g.title, g.price, od.is_purchased FROM users u JOIN orders o ON u.user_id = o.user_id JOIN order_details od ON o.order_id = od.order_id JOIN games g ON od.game_id = g.game_id WHERE u.username = ?"
+	query := "SELECT od.order_id, g.title, g.price, od.is_purchased FROM users u JOIN orders o ON u.user_id = o.user_id JOIN order_details od ON o.order_id = od.order_id JOIN games g ON od.game_id = g.game_id WHERE u.username = ? AND od.is_purchased = ?"
 
-	rows, err := db.Query(query, user.Username)
+	rows, err := db.Query(query, user.Username, 0)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -28,6 +28,7 @@ func Cart(user entity.User) {
 	defer rows.Close()
 
 	var orderId int
+	var totalPrice float64
 	data := false
 	fmt.Println("==========")
 	fmt.Println("   Cart")
@@ -42,6 +43,7 @@ func Cart(user entity.User) {
 			fmt.Println(err)
 		}
 
+		totalPrice += price
 		if !isPurchased {
 			utility.PrintSpace(title, len("Game Title       "))
 			utility.PrintSpace(price, len(" Price     "))
@@ -72,7 +74,7 @@ func Cart(user entity.User) {
 		DeleteItemInCart(db, orderId)
 		utility.EnterToContinue()
 	case "2":
-		fmt.Println("Checkout")
+		CheckoutCart(db, orderId, totalPrice, user.Username)
 		utility.EnterToContinue()
 	case "0":
 		return
