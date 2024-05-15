@@ -9,12 +9,12 @@ import (
 	"vapor/handler"
 )
 
-func adminMenu(admin entity.User) {
+func AdminMenu(admin entity.User) {
 	reader := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Println("Selamat datang ADMIN, ", admin.Username)
+		fmt.Println("Welcome Admin , ", admin.Username)
 		fmt.Println()
-		fmt.Println("Silahkan pilih menu:")
+		fmt.Println("Choose menu:")
 		fmt.Println("1. Add New Game")
 		fmt.Println("2. Update Game")
 		fmt.Println("3. Delete Game")

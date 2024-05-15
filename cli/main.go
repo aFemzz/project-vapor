@@ -29,10 +29,10 @@ func main() {
 			}
 			if user.Role == "admin" {
 				// role admin
-				adminMenu(user)
+				AdminMenu(user)
 			} else {
 				// role user
-				userMenu(user)
+				UserMenu(user)
 			}
 		case "2":
 			handler.Register()
