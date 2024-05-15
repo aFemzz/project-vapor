@@ -1,12 +1,17 @@
 package handler
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strconv"
+	"strings"
 	"vapor/config"
+	"vapor/entity"
 	"vapor/utility"
 )
 
-func PurchaseGame() {
+func PurchaseGame(user entity.User) {
 	db, err := config.GetDB()
 	if err != nil {
 		fmt.Println("Error getting DB:", err)
@@ -32,7 +37,7 @@ func PurchaseGame() {
 	fmt.Println("==========")
 
 	fmt.Println("Game ID	  | Title	 | Game Description    				 | Price     	| Publisher     		| Rating     |")
-
+	// var GameID int
 	for rows.Next() {
 		var GameID int
 		var Title string
@@ -63,25 +68,41 @@ func PurchaseGame() {
 		return
 	}
 
-	// reader := bufio.NewReader(os.Stdin)
-	// for {
-	// 	fmt.Print("Input the Game ID to add it to cart : ")
-	// 	input, _ := reader.ReadString('\n')
-	// 	input = strings.TrimSpace(input)
-	// 	switch input {
-	// 	case "1":
+	reader := bufio.NewReader(os.Stdin)
+	for {
 
-	// 	case "2":
+		fmt.Println("Input the Game ID to add it to cart  ")
+		fmt.Print("(type done to return to menu) :")
+		InputIDStr, _ := reader.ReadString('\n')
+		InputIDStr = strings.TrimSpace(InputIDStr)
+		_, err := strconv.Atoi(InputIDStr)
 
-	// 	case "3":
+		if InputIDStr == "done" {
+			fmt.Println("Returning to menu...")
+			break // Exit the loop if "done" is entered
+		}
+		if err != nil {
+			fmt.Println("Invalid input. Please enter a valid integer.")
+			continue
+		}
 
-	// 	case "4":
+		// fmt.Printf("%s\n", Title)
 
-	// 	case "7":
-	// 		fmt.Println("Logged out ... ")
-	// 		return
+		fmt.Println(user.User_ID)
 
-	// 	}
-	// }
+		QueryToOrders, err := db.Prepare("INSERT INTO orders (user_id) VALUES (?)")
+		if err != nil {
+			fmt.Println("Error preparing statement:", err)
+			return
+		}
+		defer QueryToOrders.Close()
+
+		_, err = QueryToOrders.Exec(user.User_ID)
+		if err != nil {
+			fmt.Println("Error executing statement:", err)
+			return
+		}
+
+	}
 
 }
