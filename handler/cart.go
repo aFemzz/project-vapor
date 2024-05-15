@@ -18,7 +18,7 @@ func Cart(user entity.User) {
 	}
 	reader := bufio.NewReader(os.Stdin)
 
-	query := "SELECT g.title, g.price, od.is_purchased FROM users u JOIN orders o ON u.user_id = o.user_id JOIN order_details od ON o.order_id = od.order_id JOIN games g ON od.game_id = g.game_id WHERE u.username = ?"
+	query := "SELECT od.order_id, g.title, g.price, od.is_purchased FROM users u JOIN orders o ON u.user_id = o.user_id JOIN order_details od ON o.order_id = od.order_id JOIN games g ON od.game_id = g.game_id WHERE u.username = ?"
 
 	rows, err := db.Query(query, user.Username)
 	if err != nil {
@@ -27,15 +27,18 @@ func Cart(user entity.User) {
 	}
 	defer rows.Close()
 
+	var orderId int
+	data := false
 	fmt.Println("==========")
 	fmt.Println("   Cart")
 	fmt.Println("==========")
 	fmt.Println("Game Title       | Price     |")
 	for rows.Next() {
+		data = true
 		var title string
 		var price float64
 		var isPurchased bool
-		if err = rows.Scan(&title, &price, &isPurchased); err != nil {
+		if err = rows.Scan(&orderId, &title, &price, &isPurchased); err != nil {
 			fmt.Println(err)
 		}
 
@@ -44,6 +47,13 @@ func Cart(user entity.User) {
 			utility.PrintSpace(price, len(" Price     "))
 			fmt.Println()
 		}
+	}
+
+	if !data {
+		fmt.Println("No item in your carts")
+		fmt.Println()
+		utility.EnterToContinue()
+		return
 	}
 
 	fmt.Println()
@@ -59,7 +69,7 @@ func Cart(user entity.User) {
 
 	switch input {
 	case "1":
-		fmt.Println("Delete Item in Cart")
+		DeleteItemInCart(db, orderId)
 		utility.EnterToContinue()
 	case "2":
 		fmt.Println("Checkout")
