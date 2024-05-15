@@ -16,36 +16,17 @@ func TopSellingGame() {
 
 	query := `
 	SELECT
-		t1.title,
-		t1.count as cnt
+		g.title,
+		COUNT(g.game_id) as cnt
 	FROM
-		(
-			SELECT
-				g.title,
-				COUNT(g.game_id) as count
-			FROM
-				games g
-				JOIN order_details od ON g.game_id = od.game_id
-			GROUP BY
-				g.game_id
-			ORDER BY
-				COUNT(g.game_id)
-		) as t1
-		join (
-			select
-				COUNT(g.game_id) as cnt
-			FROM
-				games g
-				JOIN order_details od ON g.game_id = od.game_id
-			GROUP BY
-				g.game_id
-			ORDER BY
-				COUNT(g.game_id) DESC
-			LIMIT
-				1
-		) as t2
-	where
-		cnt = t2.cnt
+		games g
+		JOIN order_details od ON g.game_id = od.game_id
+	GROUP BY
+		g.game_id
+	ORDER BY
+		COUNT(g.game_id) DESC,
+		g.title ASC
+	LIMIT 5
 	`
 
 	rows, err := db.Query(query)
@@ -56,7 +37,7 @@ func TopSellingGame() {
 	defer rows.Close()
 
 	fmt.Println("=================================================")
-	fmt.Println("                  TOP SELLING GAME")
+	fmt.Println("                 TOP 5 SELLING GAME")
 	fmt.Println("=================================================")
 	fmt.Println("GAME TITLE               | TOTAL BUY             |")
 	for rows.Next() {
