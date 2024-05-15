@@ -30,10 +30,12 @@ func Cart(user entity.User) {
 	var orderId int
 	var totalPrice float64
 	data := false
+
 	fmt.Println("==========")
 	fmt.Println("   Cart")
 	fmt.Println("==========")
 	fmt.Println("Game Title       | Price     |")
+
 	for rows.Next() {
 		data = true
 		var title string
