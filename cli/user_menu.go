@@ -10,10 +10,9 @@ import (
 )
 
 func UserMenu(user entity.User) {
-	example := entity.User{User_ID: 1, Username: "johndoe"}
 	reader := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Println("Welcome to Vapor , ", example.Username)
+		fmt.Println("Welcome to Vapor , ", user.Username)
 		fmt.Println()
 		fmt.Println("Choose menu:")
 		// fmt.Println("1. List Game")
@@ -34,7 +33,7 @@ func UserMenu(user entity.User) {
 		case "1":
 			handler.PurchaseGame()
 		case "2":
-			handler.Cart(example)
+			handler.Cart(user)
 		case "3":
 			handler.Library()
 		case "4":
