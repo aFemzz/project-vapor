@@ -2,15 +2,18 @@ package handler
 
 import (
 	"bufio"
+	"database/sql"
 	"fmt"
 	"os"
 	"strings"
 	"vapor/config"
+	"vapor/entity"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 func Register() {
+	var u entity.User
 	db, err := config.GetDB()
 	if err != nil {
 		fmt.Println("Error when connecting to db:", err)
@@ -44,5 +47,26 @@ func Register() {
 	}
 
 	fmt.Printf("User '%v' added succesfuly!\n", username)
-	fmt.Println()
+	fmt.Println("Your funds is zero, do you want to add funds? (y/n)")
+	for {
+		input, _ := reader.ReadString('\n')
+		input = strings.TrimSpace(input)
+		switch input {
+		case "y":
+			// get the user data
+			err = db.QueryRow("SELECT user_id, username, password, role, saldo FROM users WHERE email = ?", email).Scan(&u.User_ID, &u.Username, &u.Password, &u.Role, &u.Saldo)
+			switch {
+			case err == sql.ErrNoRows:
+				fmt.Println("password or user doesn't match")
+			case err != nil:
+				fmt.Printf("error: %v\n", err.Error())
+			}
+			AddFunds(u)
+			return
+		case "n":
+			return
+		default:
+			fmt.Println("invalid input")
+		}
+	}
 }
