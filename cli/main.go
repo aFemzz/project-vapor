@@ -11,7 +11,7 @@ import (
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Println("Selamat datang di game Vapor")
+		fmt.Println("Selamat datang di Vapor")
 		fmt.Println()
 		fmt.Println("1. Login")
 		fmt.Println("2. Register")
@@ -26,6 +26,7 @@ func main() {
 			user, err := handler.Login()
 			if err != nil {
 				fmt.Println("Error when log in: ", err)
+				break
 			}
 			if user.Role == "admin" {
 				// role admin
