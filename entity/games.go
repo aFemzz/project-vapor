@@ -9,3 +9,8 @@ type Games struct {
 	Publisher   string
 	Rating      float64
 }
+
+type Publisher struct {
+	Name     string
+	TotalBuy int
+}

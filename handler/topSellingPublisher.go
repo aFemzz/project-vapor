@@ -2,18 +2,10 @@ package handler
 
 import (
 	"fmt"
-	"vapor/config"
-	"vapor/utility"
+	"vapor/entity"
 )
 
-func TopSellingPublisher() {
-	db, err := config.GetDB()
-	if err != nil {
-		fmt.Printf("error when connecting to db:%v\n", err)
-		return
-	}
-	defer db.Close()
-
+func (s *Handler) TopSellingPublisher() ([]entity.Publisher, error) {
 	query := `
 	SELECT
 		g.publisher,
@@ -29,28 +21,23 @@ func TopSellingPublisher() {
 	LIMIT 5
 	`
 
-	rows, err := db.Query(query)
+	var publisher []entity.Publisher
+
+	rows, err := s.DB.Query(query)
 	if err != nil {
-		fmt.Println(err.Error())
-		return
+		return publisher, err
 	}
 	defer rows.Close()
 
-	fmt.Println("=================================================")
-	fmt.Println("                 TOP 5 GAME PUBLISHER")
-	fmt.Println("=================================================")
-	fmt.Println("GAME PUBLISHER           | TOTAL BUY             |")
 	for rows.Next() {
-		var publisher string
-		var totalBuy int
-		if err := rows.Scan(&publisher, &totalBuy); err != nil {
-			fmt.Println(err.Error())
-			return
+		var p entity.Publisher
+		if err := rows.Scan(&p.Name, &p.TotalBuy); err != nil {
+			return publisher, err
 		}
-
-		utility.PrintSpace(publisher, len("Game PUBLISHER           "))
-		utility.PrintSpace(totalBuy, len(" Total Buy             "))
-		fmt.Println()
+		publisher = append(publisher, p)
 	}
-	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	if len(publisher) == 0 {
+		return publisher, fmt.Errorf("data game is empty")
+	}
+	return publisher, nil
 }
