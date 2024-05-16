@@ -33,17 +33,74 @@ func UserMenu(user entity.User, hd *handler.Handler) {
 		case "1":
 			handler.PurchaseGame(user)
 		case "2":
-			handler.Cart(user)
+			fmt.Println("=================================================")
+			fmt.Println("                      CART")
+			fmt.Println("=================================================")
+			fmt.Println("GAME TITLE           | PRICE             |")
+
+			data, totalPrice, orderId, err := hd.Cart(user)
+			if err != nil {
+				fmt.Println("Error:", err)
+				break
+			}
+
+			if len(data) == 0 {
+				fmt.Println("No item in your carts")
+				fmt.Println()
+				utility.EnterToContinue()
+				break
+			}
+
+			for _, item := range data {
+				utility.PrintSpace(item.Title, len("GAME TITLE           "))
+				utility.PrintSpace(item.Price, len(" PRICE             "))
+				fmt.Println()
+			}
+			fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+			fmt.Println()
+			fmt.Println("Choose menu:")
+			fmt.Println("1. Delete Item in Cart")
+			fmt.Println("2. Checkout")
+			fmt.Println("0. Main Menu")
+			fmt.Println()
+
+			fmt.Print("Input the number: ")
+			inputCartMenu, _ := reader.ReadString('\n')
+			inputCartMenu = strings.TrimSpace(inputCartMenu)
+
+			switch inputCartMenu {
+			case "1":
+				fmt.Print("Please enter the game title you want to delete:")
+				inputDeleteItem, _ := reader.ReadString('\n')
+				inputDeleteItem = strings.TrimSpace(inputDeleteItem)
+				err = hd.DeleteItemInCart(orderId, inputDeleteItem)
+				fmt.Println("Item deleted successfully")
+				utility.EnterToContinue()
+			case "2":
+				saldo, err := hd.CheckoutCart(orderId, totalPrice, user.Username)
+				if err != nil {
+					fmt.Println("Error:", err)
+					break
+				}
+				fmt.Println("Order has been purchased")
+				fmt.Printf("Your current saldo is $%.2f\n", saldo)
+				utility.EnterToContinue()
+			case "0":
+				break
+			default:
+				fmt.Println("Invalid input")
+				break
+			}
 		case "3":
 			fmt.Println("=================================================")
 			fmt.Println("                    LIBRARY")
 			fmt.Println("=================================================")
-			data, isNotEmpty, err := hd.Library(user)
+			data, err := hd.Library(user)
 			if err != nil {
-				fmt.Println(err)
+				fmt.Println("Error:", err)
 				break
 			}
-			if !isNotEmpty {
+			if len(data) == 0 {
 				fmt.Println("No game in your library")
 			} else {
 				for index, title := range data {

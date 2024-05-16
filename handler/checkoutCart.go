@@ -1,46 +1,44 @@
 package handler
 
 import (
-	"database/sql"
 	"fmt"
 )
 
-func CheckoutCart(db *sql.DB, orderId int, totalPrice float64, username string) {
+func (s *Handler) CheckoutCart(orderId int, totalPrice float64, username string) (float64, error) {
 	querySaldo := "SELECT saldo FROM users WHERE username = ?"
 
-	rows, err := db.Query(querySaldo, username)
+	rows, err := s.DB.Query(querySaldo, username)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return 0, fmt.Errorf("error while get data")
 	}
 	defer rows.Close()
 
 	var saldo float64
 	for rows.Next() {
 		if err = rows.Scan(&saldo); err != nil {
-			fmt.Println(err)
-			return
+			return 0, fmt.Errorf("error while scan data")
 		}
 	}
 
 	if saldo < totalPrice {
-		fmt.Println("You have no enough balance for this transaction, please add your funds")
-		return
+		return 0, fmt.Errorf("you have no enough balance for this transaction, please add your funds")
 	}
+
 	saldo -= totalPrice
 
 	query := "UPDATE order_details SET is_purchased = 1 WHERE order_id = ? AND is_purchased = ?"
 
-	_, err = db.Exec(query, orderId, 0)
+	_, err = s.DB.Exec(query, orderId, 0)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return 0, fmt.Errorf("error while update data")
 	}
 
 	query = "UPDATE users SET saldo = ? WHERE username = ?"
 
-	_, err = db.Exec(query, saldo, username)
+	_, err = s.DB.Exec(query, saldo, username)
+	if err != nil {
+		return 0, fmt.Errorf("error while update data")
+	}
 
-	fmt.Println("Order has been purchased")
-	fmt.Printf("Your current saldo is $%.2f\n", saldo)
+	return saldo, nil
 }
