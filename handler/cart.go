@@ -62,6 +62,7 @@ func Cart(user entity.User) {
 		return
 	}
 
+	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	fmt.Println()
 	fmt.Println("Choose menu:")
 	fmt.Println("1. Delete Item in Cart")

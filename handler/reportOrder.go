@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 	"vapor/config"
+	"vapor/utility"
 )
 
 func ReportOrder() {
@@ -43,6 +44,10 @@ func ReportOrder() {
 	}
 	defer rows.Close()
 
+	fmt.Println("=================================================================")
+	fmt.Println("                          ORDER REPORT")
+	fmt.Println("=================================================================")
+	fmt.Println("GAME TITLE           | USERNAME             | DATE             |")
 	var totalRevenue float64
 	for rows.Next() {
 		var title, username, date string
@@ -52,7 +57,11 @@ func ReportOrder() {
 			return
 		}
 		totalRevenue += price
-		fmt.Println(title, username, date)
+		utility.PrintSpace(title, len("GAME TITLE           "))
+		utility.PrintSpace(username, len(" USERNAME             "))
+		utility.PrintSpace(date, len(" DATE             "))
+		fmt.Println()
 	}
-	fmt.Printf("%.2f\n", totalRevenue)
+	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	fmt.Printf("Total revenue from %s to %s: %.2f\n", inputStart, inputEnd, totalRevenue)
 }
