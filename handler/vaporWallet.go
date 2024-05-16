@@ -6,7 +6,7 @@ import (
 	"vapor/entity"
 )
 
-func (s *Handler) VaporWallet(user entity.User) (error, float64) {
+func (s *Handler) VaporWallet(user entity.User) (float64, error) {
 
 	QueryToGetWallet :=
 		`
@@ -16,11 +16,11 @@ func (s *Handler) VaporWallet(user entity.User) (error, float64) {
 	err := s.DB.QueryRow(QueryToGetWallet, user.User_ID).Scan(&wallet)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return fmt.Errorf("user not found "), 0
+			return 0, fmt.Errorf("user not found ")
 		}
 		fmt.Printf("error retrieving wallet balance: %v", err)
-		return err, 0
+		return 0, err
 	}
 
-	return nil, wallet
+	return wallet, nil
 }
