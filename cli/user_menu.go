@@ -83,7 +83,7 @@ func UserMenu(user entity.User, hd *handler.Handler) {
 				fmt.Println("Item deleted successfully")
 				utility.EnterToContinue()
 			case "2":
-				saldo, err := hd.CheckoutCart(orderId, totalPrice, user.Username)
+				saldo, err := hd.CheckoutCart(orderId, totalPrice, user.User_ID)
 				if err != nil {
 					fmt.Println("Error:", err)
 					break
