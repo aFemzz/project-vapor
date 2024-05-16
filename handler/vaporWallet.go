@@ -30,7 +30,7 @@ func VaporWallet(user entity.User) {
 		return
 	}
 	fmt.Println("====================")
-	fmt.Println("Your Balance : ", wallet)
+	fmt.Printf("Your Balance : $%.2f\n", wallet)
 	fmt.Println("====================")
 
 }

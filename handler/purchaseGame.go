@@ -20,6 +20,44 @@ func PurchaseGame(user entity.User) {
 	}
 	defer db.Close()
 
+	var scanOrderId int
+	var scanExists bool
+	queryOrderIdExists :=
+		`
+	SELECT EXISTS ( SELECT 1 FROM orders WHERE user_id = ? )
+	`
+
+	err = db.QueryRow(queryOrderIdExists, user.User_ID).Scan(&scanExists)
+	if err != nil {
+		fmt.Println("Error checking cart status:", err)
+		return
+	}
+
+	if !scanExists {
+		queryToCreateOrderId :=
+			`
+		INSERT INTO orders ( user_id ) VALUES (?)
+		`
+		_, err := db.Exec(queryToCreateOrderId, user.User_ID)
+		if err != nil {
+			fmt.Println("Error checking cart status:", err)
+			return
+		}
+		fmt.Println()
+	}
+
+	queryToScanOrderId :=
+		`
+		SELECT order_id FROM orders
+		WHERE user_id = ?
+		`
+
+	err = db.QueryRow(queryToScanOrderId, user.User_ID).Scan(&scanOrderId)
+	if err != nil {
+		fmt.Println("Error checking cart status:", err)
+		return
+	}
+
 	queryToDisplayAllGames := `
         SELECT game_id, title, description, price, developer, publisher, rating 
         FROM games 
@@ -95,40 +133,60 @@ func PurchaseGame(user entity.User) {
 
 		fmt.Printf("Game ID: %d\n", selectedGame.GameID)
 		fmt.Printf("Title: %s\n", selectedGame.Title)
+		fmt.Println()
 
-		// Check if the game is already in the cart (order_details with is_purchased = 0)
-		var isInCart bool
+		var isOrdered bool
 		checkQuery :=
 			`SELECT EXISTS(
-			SELECT 1 FROM order_details od
-			JOIN orders o ON od.order_id = o.order_id
-			WHERE o.user_id = ? AND od.game_id = ? AND od.is_purchased = 0
-		)`
-		err = db.QueryRow(checkQuery, user.User_ID, selectedGame.GameID).Scan(&isInCart)
+            SELECT 1 FROM order_details 
+            WHERE order_id = ? AND game_id = ?
+        )`
+		err = db.QueryRow(checkQuery, scanOrderId, selectedGame.GameID).Scan(&isOrdered)
 		if err != nil {
 			fmt.Println("Error checking cart status:", err)
 			continue
 		}
 
-		if isInCart {
-			fmt.Println("The game is already in the cart.")
-			continue
+		if isOrdered {
+			var isPurchased bool
+			// fmt.Println("sebelum query isPurchased : ", isPurchased)
+			checkQuery :=
+				`SELECT is_purchased FROM order_details 
+			
+			WHERE order_id = ? AND game_id = ?
+			`
+
+			err = db.QueryRow(checkQuery, scanOrderId, selectedGame.GameID).Scan(&isPurchased)
+			if err != nil {
+				fmt.Println("Error checking cart status:", err)
+				continue
+			}
+
+			// fmt.Println("abis query isPurchased : ", isPurchased)
+			if isPurchased {
+				fmt.Println("The game is already in the library.")
+				continue
+			}
+			if !isPurchased {
+
+				fmt.Println("The game already in the cart")
+				continue
+			}
 		}
+
+		// Check if the game is already in the cart (order_details with is_purchased = 0)
 
 		// Insert into order_details
 		insertDetailQuery :=
 			`INSERT INTO order_details (order_id, game_id, is_purchased, date) 
-		SELECT order_id, ?, ?, ?
-		FROM orders 
-		WHERE user_id = ? 
-		ORDER BY order_id DESC 
-		LIMIT 1`
-		_, err = db.Exec(insertDetailQuery, selectedGame.GameID, false, time.Now().Format("2006-01-02"), user.User_ID)
+			VALUES ( ?, ?, ?, ?)`
+		_, err = db.Exec(insertDetailQuery, scanOrderId, selectedGame.GameID, false, time.Now().Format("2006-01-02"))
 		if err != nil {
 			fmt.Println("Error inserting order details:", err)
 			continue
 		}
 
 		fmt.Println("The game has been added to your cart.")
+		fmt.Println()
 	}
 }
