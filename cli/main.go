@@ -36,7 +36,19 @@ func main() {
 
 		switch input {
 		case "1":
-			user, err := handler.Login()
+			fmt.Println("======================================")
+			fmt.Println("             	 LOGIN ")
+			fmt.Println("======================================")
+			reader := bufio.NewReader(os.Stdin)
+
+			fmt.Print("Insert your email: ")
+			email, _ := reader.ReadString('\n')
+			email = strings.TrimSpace(email)
+
+			fmt.Print("Insert your password: ")
+			password, _ := reader.ReadString('\n')
+			password = strings.TrimSpace(password)
+			user, err := hd.Login(email, password)
 			if err != nil {
 				fmt.Println("Error when log in: ", err)
 				break

@@ -27,7 +27,7 @@ func TestRegister_UserExist(t *testing.T) {
 		WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
 
 		// Call the AddAdmin function
-	err = handler.Register("yol", "yol", "yol@gmail.com")
+	err = handler.Register("yol", "yol@gmail.com", "yol")
 
 	// Assert that correct error returned
 	assert.Error(t, err)
@@ -63,7 +63,7 @@ func TestRegister_NewUser(t *testing.T) {
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	// Call the Register function
-	err = handler.Register("new_user", "yol", "user@example.com")
+	err = handler.Register("new_user", "user@example.com", "yol")
 
 	// Assert that correct error returned
 	assert.NoError(t, err)
