@@ -49,7 +49,25 @@ func main() {
 				UserMenu(user, hd)
 			}
 		case "2":
-			handler.Register()
+			fmt.Println("======================================")
+			fmt.Println("         REGISTER NEW ACCOUNT ")
+			fmt.Println("======================================")
+			reader := bufio.NewReader(os.Stdin)
+			fmt.Print("Insert your username: ")
+			username, _ := reader.ReadString('\n')
+			username = strings.TrimSpace(username)
+
+			fmt.Print("Insert your email: ")
+			email, _ := reader.ReadString('\n')
+			email = strings.TrimSpace(email)
+
+			fmt.Print("Insert your password: ")
+			password, _ := reader.ReadString('\n')
+			password = strings.TrimSpace(password)
+			err = hd.Register(username, email, password)
+			if err != nil {
+				fmt.Println(err)
+			}
 		case "0":
 			fmt.Println("Exit program...")
 			return
