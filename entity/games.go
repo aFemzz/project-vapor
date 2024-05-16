@@ -14,3 +14,8 @@ type Publisher struct {
 	Name     string
 	TotalBuy int
 }
+
+type TopGame struct {
+	Name     string
+	TotalBuy int
+}

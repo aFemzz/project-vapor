@@ -111,7 +111,21 @@ func UserMenu(user entity.User, hd *handler.Handler) {
 			fmt.Println()
 			utility.EnterToContinue()
 		case "4":
-			handler.TopSellingGame()
+			topGame, err := hd.TopSellingGame()
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
+			fmt.Println("=================================================")
+			fmt.Println("                 TOP 5 SELLING GAME")
+			fmt.Println("=================================================")
+			fmt.Println("GAME TITLE               | TOTAL BUY             |")
+			for _, v := range topGame {
+				utility.PrintSpace(v.Name, len("Game Title               "))
+				utility.PrintSpace(v.TotalBuy, len(" Total Buy             "))
+				fmt.Println()
+			}
+			fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 		case "5":
 			err, wallet := hd.VaporWallet(user)
 

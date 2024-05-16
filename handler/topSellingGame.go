@@ -2,18 +2,10 @@ package handler
 
 import (
 	"fmt"
-	"vapor/config"
-	"vapor/utility"
+	"vapor/entity"
 )
 
-func TopSellingGame() {
-	db, err := config.GetDB()
-	if err != nil {
-		fmt.Printf("error when connecting to db:%v\n", err)
-		return
-	}
-	defer db.Close()
-
+func (h *Handler) TopSellingGame() ([]entity.TopGame, error) {
 	query := `
 	SELECT
 		g.title,
@@ -29,28 +21,24 @@ func TopSellingGame() {
 	LIMIT 5
 	`
 
-	rows, err := db.Query(query)
+	listTopGame := []entity.TopGame{}
+	rows, err := h.DB.Query(query)
 	if err != nil {
-		fmt.Println(err.Error())
-		return
+		return listTopGame, err
 	}
 	defer rows.Close()
 
-	fmt.Println("=================================================")
-	fmt.Println("                 TOP 5 SELLING GAME")
-	fmt.Println("=================================================")
-	fmt.Println("GAME TITLE               | TOTAL BUY             |")
 	for rows.Next() {
-		var title string
-		var totalBuy int
-		if err := rows.Scan(&title, &totalBuy); err != nil {
-			fmt.Println(err.Error())
-			return
-		}
 
-		utility.PrintSpace(title, len("Game Title               "))
-		utility.PrintSpace(totalBuy, len(" Total Buy             "))
-		fmt.Println()
+		var g entity.TopGame
+		if err := rows.Scan(&g.Name, &g.TotalBuy); err != nil {
+			return listTopGame, err
+		}
+		listTopGame = append(listTopGame, g)
+
 	}
-	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	if len(listTopGame) == 0 {
+		return listTopGame, fmt.Errorf("empty list")
+	}
+	return listTopGame, nil
 }

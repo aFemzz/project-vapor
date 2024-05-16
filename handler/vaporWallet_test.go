@@ -20,7 +20,7 @@ func TestVaporWallet(t *testing.T) {
 	user := entity.User{User_ID: 1}
 
 	// Mock the expected behavior of the database call.
-	rows := sqlmock.NewRows([]string{"saldo"}).AddRow(50.0)
+	rows := sqlmock.NewRows([]string{"saldo"}).AddRow(100.0)
 	mock.ExpectQuery("SELECT saldo FROM users WHERE user_id = ?").WithArgs(user.User_ID).WillReturnRows(rows)
 
 	// Call the function being tested.
