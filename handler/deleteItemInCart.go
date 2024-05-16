@@ -11,7 +11,7 @@ import (
 func DeleteItemInCart(db *sql.DB, orderID int) {
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Println("Please enter the game title you want to delete:")
+	fmt.Print("Please enter the game title you want to delete:")
 	input, _ := reader.ReadString('\n')
 	input = strings.TrimSuffix(input, "\n")
 
