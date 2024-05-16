@@ -1,63 +1,34 @@
 package handler
 
 import (
-	"bufio"
 	"database/sql"
 	"fmt"
-	"os"
-	"strconv"
-	"strings"
-	"vapor/config"
 )
 
-func DeleteGame() {
-	reader := bufio.NewReader(os.Stdin)
-	db, err := config.GetDB()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer db.Close()
-
-	fmt.Print("Input Game Id to delete:")
-	input, _ := reader.ReadString('\n')
-	input = strings.TrimSpace(input)
-	if input == "" {
-		fmt.Println("You have to enter a game id")
-		return
-	}
-	gameId, err := strconv.Atoi(input)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
+func (s *Handler) DeleteGame(gameId int) error {
 	var is_deleted bool
 
 	query := "SELECT is_deleted FROM games WHERE game_id=?"
 
-	err = db.QueryRow(query, gameId).Scan(&is_deleted)
+	err := s.DB.QueryRow(query, gameId).Scan(&is_deleted)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			fmt.Println("Game not found")
+			return fmt.Errorf("game not found")
 		} else {
-			fmt.Println(err)
+			return fmt.Errorf("error while scan data")
 		}
-		return
 	}
 
 	if is_deleted {
-		fmt.Println("Game already deleted")
-		return
+		return fmt.Errorf("game already deleted")
 	}
 	is_deleted = true
 
 	query = "UPDATE games SET is_deleted=? WHERE game_id=?"
-	_, err = db.Exec(query, is_deleted, gameId)
+	_, err = s.DB.Exec(query, is_deleted, gameId)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return fmt.Errorf("error while delete game")
 	}
 
-	fmt.Println("Game successfully deleted")
+	return nil
 }

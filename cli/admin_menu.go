@@ -76,6 +76,9 @@ func AdminMenu(admin entity.User, hd *handler.Handler) {
 				fmt.Println(err)
 			}
 		case "2":
+			fmt.Println("======================================")
+			fmt.Println("             UPDATE GAME ")
+			fmt.Println("======================================")
 			fmt.Print("Input Game Id to edit:")
 			inputGameId, _ := reader.ReadString('\n')
 			inputGameId = strings.TrimSpace(inputGameId)
@@ -137,7 +140,27 @@ func AdminMenu(admin entity.User, hd *handler.Handler) {
 			fmt.Println("Game successfully updated")
 			utility.EnterToContinue()
 		case "3":
-			handler.DeleteGame()
+			fmt.Println("======================================")
+			fmt.Println("              DELETE GAME ")
+			fmt.Println("======================================")
+			fmt.Print("Input Game Id to delete:")
+			inputGameId, _ := reader.ReadString('\n')
+			inputGameId = strings.TrimSpace(inputGameId)
+			if inputGameId == "" {
+				fmt.Println("You have to enter a game id")
+				break
+			}
+			gameId, err := strconv.Atoi(inputGameId)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			err = hd.DeleteGame(gameId)
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
+			fmt.Println("Game successfully deleted")
 			utility.EnterToContinue()
 		case "4":
 			handler.ReportOrder()
