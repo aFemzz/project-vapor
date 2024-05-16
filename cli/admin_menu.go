@@ -22,10 +22,9 @@ func AdminMenu(admin entity.User, hd *handler.Handler) {
 		fmt.Println("2. Update Game")
 		fmt.Println("3. Delete Game")
 		fmt.Println("4. Report Order")
-		fmt.Println("5. User Report")
-		fmt.Println("6. Top Selling Publisher")
-		fmt.Println("7. Add Admin")
-		fmt.Println("8. Log out as Admin")
+		fmt.Println("5. Top Selling Publisher")
+		fmt.Println("6. Add Admin")
+		fmt.Println("7. Log out as Admin")
 		fmt.Println("0. Exit program")
 		fmt.Println()
 
@@ -144,8 +143,6 @@ func AdminMenu(admin entity.User, hd *handler.Handler) {
 			handler.ReportOrder()
 			utility.EnterToContinue()
 		case "5":
-			handler.UserReport()
-		case "6":
 			publisher, err := hd.TopSellingPublisher()
 			if err != nil {
 				fmt.Println(err.Error())
@@ -162,7 +159,7 @@ func AdminMenu(admin entity.User, hd *handler.Handler) {
 				fmt.Println()
 			}
 			fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-		case "7":
+		case "6":
 			fmt.Println("=============================================")
 			fmt.Println("               ADD NEW ADMIN")
 			fmt.Println("=============================================")
@@ -183,7 +180,7 @@ func AdminMenu(admin entity.User, hd *handler.Handler) {
 				fmt.Println(err)
 			}
 
-		case "8":
+		case "7":
 			fmt.Println("Logged out as admin ... ")
 			return
 		case "0":
