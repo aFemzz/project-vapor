@@ -7,18 +7,44 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"vapor/config"
 	"vapor/entity"
 	"vapor/utility"
 )
 
-func PurchaseGame(user entity.User) {
-	db, err := config.GetDB()
+func (s *Handler) ListGame() ([]entity.Games, error) {
+	var games []entity.Games
+
+	// write your code here
+	queryToDisplayAllGames := `
+	SELECT game_id, title, description, price, developer, publisher, rating 
+	FROM games 
+	WHERE is_deleted IS NULL OR is_deleted = 0;
+`
+
+	rows, err := s.DB.Query(queryToDisplayAllGames)
 	if err != nil {
-		fmt.Println("Error getting DB:", err)
-		return
+
+		return games, err
 	}
-	defer db.Close()
+	defer rows.Close()
+
+	for rows.Next() {
+		var game entity.Games
+		if err := rows.Scan(&game.GameID, &game.Title, &game.Description, &game.Price, &game.Developer, &game.Publisher, &game.Rating); err != nil {
+			fmt.Println("Error scanning row:", err)
+			continue
+		}
+		games = append(games, game)
+	}
+	if err := rows.Err(); err != nil {
+		// fmt.Println("Error during rows iteration:", err)
+		return games, err
+	}
+
+	return games, nil
+}
+
+func (s *Handler) PurchaseGame(user entity.User) error {
 
 	var scanOrderId int
 	var scanExists bool
@@ -27,10 +53,10 @@ func PurchaseGame(user entity.User) {
 	SELECT EXISTS ( SELECT 1 FROM orders WHERE user_id = ? )
 	`
 
-	err = db.QueryRow(queryOrderIdExists, user.User_ID).Scan(&scanExists)
+	err := s.DB.QueryRow(queryOrderIdExists, user.User_ID).Scan(&scanExists)
 	if err != nil {
-		fmt.Println("Error checking cart status:", err)
-		return
+
+		return err
 	}
 
 	if !scanExists {
@@ -38,10 +64,10 @@ func PurchaseGame(user entity.User) {
 			`
 		INSERT INTO orders ( user_id ) VALUES (?)
 		`
-		_, err := db.Exec(queryToCreateOrderId, user.User_ID)
+		_, err := s.DB.Exec(queryToCreateOrderId, user.User_ID)
 		if err != nil {
-			fmt.Println("Error checking cart status:", err)
-			return
+
+			return err
 		}
 		fmt.Println()
 	}
@@ -52,39 +78,13 @@ func PurchaseGame(user entity.User) {
 		WHERE user_id = ?
 		`
 
-	err = db.QueryRow(queryToScanOrderId, user.User_ID).Scan(&scanOrderId)
+	err = s.DB.QueryRow(queryToScanOrderId, user.User_ID).Scan(&scanOrderId)
 	if err != nil {
-		fmt.Println("Error checking cart status:", err)
-		return
+
+		return err
 	}
 
-	queryToDisplayAllGames := `
-        SELECT game_id, title, description, price, developer, publisher, rating 
-        FROM games 
-        WHERE is_deleted IS NULL OR is_deleted = 0;
-    `
-
-	rows, err := db.Query(queryToDisplayAllGames)
-	if err != nil {
-		fmt.Println("Error executing query:", err)
-		return
-	}
-	defer rows.Close()
-
-	var games []entity.Game
-	for rows.Next() {
-		var game entity.Game
-		if err := rows.Scan(&game.GameID, &game.Title, &game.Description, &game.Price, &game.Developer, &game.Publisher, &game.Rating); err != nil {
-			fmt.Println("Error scanning row:", err)
-			continue
-		}
-		games = append(games, game)
-	}
-	if err := rows.Err(); err != nil {
-		fmt.Println("Error during rows iteration:", err)
-		return
-	}
-
+	games, _ := s.ListGame()
 	// Display all games
 	fmt.Println("==========")
 	fmt.Println("Games List")
@@ -118,15 +118,17 @@ func PurchaseGame(user entity.User) {
 		}
 
 		// Find the game with the specified ID
-		var selectedGame *entity.Game
-		for _, game := range games {
+		var selectedGame entity.Games
+		var gameIsAda bool = false
+		for idx, game := range games {
 			if game.GameID == InputID {
-				selectedGame = &game
+				selectedGame = games[idx]
+				gameIsAda = true
 				break
 			}
 		}
 
-		if selectedGame == nil {
+		if !gameIsAda {
 			fmt.Println("Game ID not found. Please enter a valid Game ID.")
 			continue
 		}
@@ -141,7 +143,7 @@ func PurchaseGame(user entity.User) {
             SELECT 1 FROM order_details 
             WHERE order_id = ? AND game_id = ?
         )`
-		err = db.QueryRow(checkQuery, scanOrderId, selectedGame.GameID).Scan(&isOrdered)
+		err = s.DB.QueryRow(checkQuery, scanOrderId, selectedGame.GameID).Scan(&isOrdered)
 		if err != nil {
 			fmt.Println("Error checking cart status:", err)
 			continue
@@ -156,7 +158,7 @@ func PurchaseGame(user entity.User) {
 			WHERE order_id = ? AND game_id = ?
 			`
 
-			err = db.QueryRow(checkQuery, scanOrderId, selectedGame.GameID).Scan(&isPurchased)
+			err = s.DB.QueryRow(checkQuery, scanOrderId, selectedGame.GameID).Scan(&isPurchased)
 			if err != nil {
 				fmt.Println("Error checking cart status:", err)
 				continue
@@ -177,18 +179,26 @@ func PurchaseGame(user entity.User) {
 		// Check if the game is already in the cart (order_details with is_purchased = 0)
 
 		// Insert into order_details
-		insertDetailQuery :=
-			`INSERT INTO order_details (order_id, game_id, is_purchased, date) 
-			VALUES ( ?, ?, ?, ?)`
-		_, err = db.Exec(insertDetailQuery, scanOrderId, selectedGame.GameID, false, time.Now().Format("2006-01-02"))
+		err = s.InsertToCart(scanOrderId, selectedGame.GameID)
 		if err != nil {
-			fmt.Println("Error inserting order details:", err)
-			continue
+			fmt.Println("Error inserting query", err)
 		}
 
 		fmt.Println("The game has been added to your cart.") // return this as success params, for the mock test to check
 		fmt.Println()
 
-		// yang mau di test
 	}
+	return nil
+}
+
+func (s *Handler) InsertToCart(scanOrderId, GameID int) error {
+	insertDetailQuery :=
+		`INSERT INTO order_details (order_id, game_id, is_purchased, date) 
+	VALUES ( ?, ?, ?, ?)`
+	_, err := s.DB.Exec(insertDetailQuery, scanOrderId, GameID, false, time.Now().Format("2006-01-02"))
+	if err != nil {
+		return fmt.Errorf("error inserting order details: %v", err)
+
+	}
+	return nil
 }

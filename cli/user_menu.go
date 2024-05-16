@@ -32,7 +32,12 @@ func UserMenu(user entity.User, hd *handler.Handler) {
 		input = strings.TrimSpace(input)
 		switch input {
 		case "1":
-			handler.PurchaseGame(user)
+			err := hd.PurchaseGame(user)
+
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
 		case "2":
 			fmt.Println("=================================================")
 			fmt.Println("                      CART")
