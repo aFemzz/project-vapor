@@ -88,7 +88,22 @@ func AdminMenu(admin entity.User, hd *handler.Handler) {
 		case "5":
 			handler.UserReport()
 		case "6":
-			handler.TopSellingPublisher()
+			publisher, err := hd.TopSellingPublisher()
+			if err != nil {
+				fmt.Println(err.Error())
+				break
+			}
+
+			fmt.Println("=================================================")
+			fmt.Println("                 TOP 5 GAME PUBLISHER")
+			fmt.Println("=================================================")
+			fmt.Println("GAME PUBLISHER           | TOTAL BUY             |")
+			for _, val := range publisher {
+				utility.PrintSpace(val.Name, len("Game PUBLISHER           "))
+				utility.PrintSpace(val.TotalBuy, len(" Total Buy             "))
+				fmt.Println()
+			}
+			fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 		case "7":
 			fmt.Println("=============================================")
 			fmt.Println("               ADD NEW ADMIN")
