@@ -38,6 +38,7 @@ func Library(user entity.User) {
 			return
 		}
 		fmt.Printf("%d. %s\n", index, title)
+		index += 1
 	}
 
 	if !data {
