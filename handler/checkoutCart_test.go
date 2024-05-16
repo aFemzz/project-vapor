@@ -2,16 +2,11 @@ package handler
 
 import (
 	"errors"
+	"testing"
+
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
-
-type TestData struct {
-	orderID    int
-	totalPrice float64
-	username   string
-}
 
 func TestCheckoutCart(t *testing.T) {
 	db, mock, err := sqlmock.New()

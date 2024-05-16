@@ -24,7 +24,7 @@ func TestVaporWallet(t *testing.T) {
 	mock.ExpectQuery("SELECT saldo FROM users WHERE user_id = ?").WithArgs(user.User_ID).WillReturnRows(rows)
 
 	// Call the function being tested.
-	err, wallet := h.VaporWallet(user)
+	wallet, err := h.VaporWallet(user)
 
 	// Check if the error is as expected.
 	assert.NoError(t, err, "Expected no error")

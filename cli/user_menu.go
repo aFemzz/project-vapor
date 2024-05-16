@@ -36,7 +36,6 @@ func UserMenu(user entity.User, hd *handler.Handler) {
 
 			if err != nil {
 				fmt.Println(err)
-				break
 			}
 		case "2":
 			fmt.Println("=================================================")
@@ -80,6 +79,10 @@ func UserMenu(user entity.User, hd *handler.Handler) {
 				inputDeleteItem, _ := reader.ReadString('\n')
 				inputDeleteItem = strings.TrimSpace(inputDeleteItem)
 				err = hd.DeleteItemInCart(orderId, inputDeleteItem)
+				if err != nil {
+					fmt.Println(err)
+					break
+				}
 				fmt.Println("Item deleted successfully")
 				utility.EnterToContinue()
 			case "2":
@@ -95,7 +98,6 @@ func UserMenu(user entity.User, hd *handler.Handler) {
 				break
 			default:
 				fmt.Println("Invalid input")
-				break
 			}
 		case "3":
 			fmt.Println("=================================================")
@@ -133,7 +135,7 @@ func UserMenu(user entity.User, hd *handler.Handler) {
 			}
 			fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 		case "5":
-			err, wallet := hd.VaporWallet(user)
+			wallet, err := hd.VaporWallet(user)
 
 			if err != nil {
 				fmt.Println(err)
