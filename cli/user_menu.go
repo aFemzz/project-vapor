@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"vapor/entity"
 	"vapor/handler"
@@ -138,7 +139,30 @@ func UserMenu(user entity.User, hd *handler.Handler) {
 			fmt.Println("====================")
 
 		case "6":
-			handler.AddFunds(user)
+			fmt.Println("======================================")
+			fmt.Println("             ADD FUNDS ")
+			fmt.Println("======================================")
+			reader := bufio.NewReader(os.Stdin)
+			var funds float64
+			var err error
+			for {
+
+				fmt.Print("How much you want to top up? $ ")
+				input, _ := reader.ReadString('\n')
+				input = strings.TrimSpace(input)
+
+				funds, err = strconv.ParseFloat(input, 64)
+				if err != nil || funds <= 0 {
+					fmt.Println("Please input valid value")
+					continue
+				}
+				break
+			}
+			err = hd.AddFunds(user, funds)
+			if err != nil {
+				fmt.Println(err)
+			}
+			fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 		case "7":
 			fmt.Println("Logged out ... ")
 			return
