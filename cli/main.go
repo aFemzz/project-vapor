@@ -46,7 +46,7 @@ func main() {
 				AdminMenu(user, hd)
 			} else {
 				// role user
-				UserMenu(user)
+				UserMenu(user, hd)
 			}
 		case "2":
 			handler.Register()

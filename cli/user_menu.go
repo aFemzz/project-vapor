@@ -7,9 +7,10 @@ import (
 	"strings"
 	"vapor/entity"
 	"vapor/handler"
+	"vapor/utility"
 )
 
-func UserMenu(user entity.User) {
+func UserMenu(user entity.User, hd *handler.Handler) {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Printf("Welcome to Vapor, %v\n", user.Username)
@@ -34,7 +35,24 @@ func UserMenu(user entity.User) {
 		case "2":
 			handler.Cart(user)
 		case "3":
-			handler.Library(user)
+			fmt.Println("=================================================")
+			fmt.Println("                    LIBRARY")
+			fmt.Println("=================================================")
+			data, isNotEmpty, err := hd.Library(user)
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
+			if !isNotEmpty {
+				fmt.Println("No game in your library")
+			} else {
+				for index, title := range data {
+					fmt.Printf("%d. %s\n", index+1, title)
+				}
+			}
+			fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+			fmt.Println()
+			utility.EnterToContinue()
 		case "4":
 			handler.TopSellingGame()
 		case "5":

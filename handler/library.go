@@ -2,50 +2,30 @@ package handler
 
 import (
 	"fmt"
-	"vapor/config"
 	"vapor/entity"
-	"vapor/utility"
 )
 
-func Library(user entity.User) {
-	db, err := config.GetDB()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	fmt.Println("=================================================")
-	fmt.Println("                    LIBRARY")
-	fmt.Println("=================================================")
+func (s *Handler) Library(user entity.User) ([]string, bool, error) {
+	var data []string
+	isNotEmpty := false
 
 	query := "SELECT g.title FROM games g JOIN order_details od ON g.game_id = od.game_id JOIN orders o ON od.order_id = o.order_id WHERE o.user_id = ? AND od.is_purchased = ?"
 
-	rows, err := db.Query(query, user.User_ID, true)
+	rows, err := s.DB.Query(query, user.User_ID, true)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return nil, false, fmt.Errorf("error while get data")
 	}
 	defer rows.Close()
 
-	index := 1
-	data := false
 	for rows.Next() {
-		data = true
+		isNotEmpty = true
 		var title string
 
 		if err = rows.Scan(&title); err != nil {
-			fmt.Println(err)
-			return
+			return nil, isNotEmpty, fmt.Errorf("error while scan data")
 		}
-		fmt.Printf("%d. %s\n", index, title)
-		index += 1
+		data = append(data, title)
 	}
 
-	if !data {
-		fmt.Println("No game in your library")
-	}
-
-	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	fmt.Println()
-	utility.EnterToContinue()
+	return data, isNotEmpty, nil
 }
