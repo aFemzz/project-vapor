@@ -86,18 +86,18 @@ func (s *Handler) PurchaseGame(user entity.User) error {
 
 	games, _ := s.ListGame()
 	// Display all games
-	fmt.Println("==========")
-	fmt.Println("Games List")
-	fmt.Println("==========")
-	fmt.Println("Game ID    | Title         | Game Description         | Price     | Developer          | Publisher          | Rating    |")
+	fmt.Println("=========================================================================================================================================================================================")
+	fmt.Println("                                                                                            GAMES LIST")
+	fmt.Println("=========================================================================================================================================================================================")
+	fmt.Println(`GAME ID | TITLE                         | GAME DESCRIPTION                                             | PRICE     | DEVELOPER          | PUBLISHER                         | RATING    |`)
 	for _, game := range games {
-		utility.PrintSpace(game.GameID, len("Game ID    "))
-		utility.PrintSpace(game.Title, len("Title         "))
-		utility.PrintSpace(game.Description, len("Game Description         "))
-		utility.PrintSpace(game.Price, len("Price     "))
-		utility.PrintSpace(game.Developer, len("Developer          "))
-		utility.PrintSpace(game.Publisher, len("Publisher          "))
-		utility.PrintSpace(game.Rating, len("Rating     "))
+		utility.PrintSpace(game.GameID, len("Game ID "))
+		utility.PrintSpace(game.Title, len(" Title                         "))
+		utility.PrintSpace(game.Description, len(" Game Description                                             "))
+		utility.PrintSpace(game.Price, len(" Price     "))
+		utility.PrintSpace(game.Developer, len(" Developer          "))
+		utility.PrintSpace(game.Publisher, len(" Publisher                         "))
+		utility.PrintSpace(game.Rating, len(" Rating     "))
 		fmt.Println()
 	}
 
