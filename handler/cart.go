@@ -7,9 +7,9 @@ import (
 
 func (s *Handler) Cart(user entity.User) ([]entity.Game, float64, int, error) {
 	var games []entity.Game
-	query := "SELECT od.order_id, g.title, g.price FROM users u JOIN orders o ON u.user_id = o.user_id JOIN order_details od ON o.order_id = od.order_id JOIN games g ON od.game_id = g.game_id WHERE u.username = ? AND od.is_purchased = ?"
+	query := "SELECT od.order_id, g.title, g.price FROM games g JOIN order_details od ON g.game_id = od.game_id JOIN orders o ON od.order_id = o.order_id WHERE o.user_id = ? AND od.is_purchased = ?"
 
-	rows, err := s.DB.Query(query, user.Username, 0)
+	rows, err := s.DB.Query(query, user.User_ID, 0)
 	if err != nil {
 		return nil, 0, 0, fmt.Errorf("error while get data")
 	}

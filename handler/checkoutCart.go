@@ -4,10 +4,10 @@ import (
 	"fmt"
 )
 
-func (s *Handler) CheckoutCart(orderId int, totalPrice float64, username string) (float64, error) {
-	querySaldo := "SELECT saldo FROM users WHERE username = ?"
+func (s *Handler) CheckoutCart(orderId int, totalPrice float64, userId int) (float64, error) {
+	querySaldo := "SELECT saldo FROM users WHERE user_id = ?"
 
-	rows, err := s.DB.Query(querySaldo, username)
+	rows, err := s.DB.Query(querySaldo, userId)
 	if err != nil {
 		return 0, fmt.Errorf("error while get data")
 	}
@@ -33,9 +33,9 @@ func (s *Handler) CheckoutCart(orderId int, totalPrice float64, username string)
 		return 0, fmt.Errorf("error while update data")
 	}
 
-	query = "UPDATE users SET saldo = ? WHERE username = ?"
+	query = "UPDATE users SET saldo = ? WHERE user_id = ?"
 
-	_, err = s.DB.Exec(query, saldo, username)
+	_, err = s.DB.Exec(query, saldo, userId)
 	if err != nil {
 		return 0, fmt.Errorf("error while update data")
 	}

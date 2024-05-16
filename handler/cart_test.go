@@ -17,14 +17,14 @@ func TestCart(t *testing.T) {
 
 	s := Handler{DB: db}
 
-	user := entity.User{Username: "test_user"}
+	user := entity.User{User_ID: 1}
 
 	rows := sqlmock.NewRows([]string{"order_id", "title", "price"}).
 		AddRow(1, "Game 1", 10.0).
 		AddRow(1, "Game 2", 15.0)
 
-	mock.ExpectQuery("SELECT od.order_id, g.title, g.price FROM users u JOIN orders o (.+) JOIN order_details od (.+) JOIN games g (.+)").
-		WithArgs(user.Username, 0).
+	mock.ExpectQuery("SELECT od.order_id, g.title, g.price FROM games g JOIN order_details od (.+) JOIN orders o (.+)").
+		WithArgs(user.User_ID, 0).
 		WillReturnRows(rows)
 
 	games, totalPrice, orderId, err := s.Cart(user)
@@ -44,10 +44,10 @@ func TestCart_ErrorQuery(t *testing.T) {
 
 	s := Handler{DB: db}
 
-	user := entity.User{Username: "test_user"}
+	user := entity.User{User_ID: 1}
 
-	mock.ExpectQuery("SELECT od.order_id, g.title, g.price FROM users u JOIN orders o (.+) JOIN order_details od (.+) JOIN games g (.+)").
-		WithArgs(user.Username, 0).
+	mock.ExpectQuery("SELECT od.order_id, g.title, g.price FROM games g JOIN order_details od (.+) JOIN orders o (.+)").
+		WithArgs(user.User_ID, 0).
 		WillReturnError(errors.New("database error"))
 
 	_, _, _, err = s.Cart(user)
