@@ -7,11 +7,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type Service struct {
+type Handler struct {
 	DB *sql.DB
 }
 
-func (s *Service) AddAdmin(username, password, email string) error {
+func (s *Handler) AddAdmin(username, password, email string) error {
 
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {

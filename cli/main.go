@@ -19,7 +19,7 @@ func main() {
 	}
 	defer db.Close()
 
-	svc := &handler.Service{
+	svc := &handler.Handler{
 		DB: db,
 	}
 	for {

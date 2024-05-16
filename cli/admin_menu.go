@@ -10,7 +10,7 @@ import (
 	"vapor/utility"
 )
 
-func AdminMenu(admin entity.User, svc *handler.Service) {
+func AdminMenu(admin entity.User, hd *handler.Handler) {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Println("Welcome Admin,", admin.Username)
@@ -64,7 +64,7 @@ func AdminMenu(admin entity.User, svc *handler.Service) {
 			password = strings.TrimSpace(password)
 
 			// handler.AddAdmin()
-			err := svc.AddAdmin(username, password, email)
+			err := hd.AddAdmin(username, password, email)
 			if err != nil {
 				fmt.Println(err)
 			}
