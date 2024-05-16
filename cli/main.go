@@ -3,13 +3,25 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"strings"
+	"vapor/config"
 	"vapor/handler"
 )
 
 func main() {
 	reader := bufio.NewReader(os.Stdin)
+
+	db, err := config.GetDB()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	svc := &handler.Service{
+		DB: db,
+	}
 	for {
 		fmt.Println("Selamat datang di Vapor")
 		fmt.Println()
@@ -30,7 +42,7 @@ func main() {
 			}
 			if user.Role == "admin" {
 				// role admin
-				AdminMenu(user)
+				AdminMenu(user, svc)
 			} else {
 				// role user
 				UserMenu(user)

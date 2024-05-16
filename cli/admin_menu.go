@@ -10,7 +10,7 @@ import (
 	"vapor/utility"
 )
 
-func AdminMenu(admin entity.User) {
+func AdminMenu(admin entity.User, svc *handler.Service) {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Println("Welcome Admin,", admin.Username)
@@ -47,7 +47,28 @@ func AdminMenu(admin entity.User) {
 		case "6":
 			handler.TopSellingPublisher()
 		case "7":
-			handler.AddAdmin()
+			reader := bufio.NewReader(os.Stdin)
+			fmt.Println("=============================================")
+			fmt.Println("               ADD NEW ADMIN")
+			fmt.Println("=============================================")
+			fmt.Print("Insert admin name: ")
+			username, _ := reader.ReadString('\n')
+			username = strings.TrimSpace(username)
+
+			fmt.Print("Insert admin email: ")
+			email, _ := reader.ReadString('\n')
+			email = strings.TrimSpace(email)
+
+			fmt.Print("Insert admin password: ")
+			password, _ := reader.ReadString('\n')
+			password = strings.TrimSpace(password)
+
+			// handler.AddAdmin()
+			err := svc.AddAdmin(username, password, email)
+			if err != nil {
+				fmt.Println(err)
+			}
+
 		case "8":
 			fmt.Println("Logged out as admin ... ")
 			return
