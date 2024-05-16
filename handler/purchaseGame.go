@@ -45,7 +45,7 @@ func PurchaseGame(user entity.User) {
 		}
 		fmt.Println()
 	}
-
+	//
 	queryToScanOrderId :=
 		`
 		SELECT order_id FROM orders
@@ -164,7 +164,7 @@ func PurchaseGame(user entity.User) {
 
 			// fmt.Println("abis query isPurchased : ", isPurchased)
 			if isPurchased {
-				fmt.Println("The game is already in the library.")
+				fmt.Println("The game is already in the library.") // return this as an error params, for the mock test to check
 				continue
 			}
 			if !isPurchased {
@@ -186,7 +186,9 @@ func PurchaseGame(user entity.User) {
 			continue
 		}
 
-		fmt.Println("The game has been added to your cart.")
+		fmt.Println("The game has been added to your cart.") // return this as success params, for the mock test to check
 		fmt.Println()
+
+		// yang mau di test
 	}
 }

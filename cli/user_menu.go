@@ -113,7 +113,15 @@ func UserMenu(user entity.User, hd *handler.Handler) {
 		case "4":
 			handler.TopSellingGame()
 		case "5":
-			handler.VaporWallet(user)
+			err, wallet := hd.VaporWallet(user)
+
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
+			fmt.Println("====================")
+			fmt.Printf("Your Balance : $%.2f\n", wallet)
+			fmt.Println("====================")
 
 		case "6":
 			handler.AddFunds(user)
