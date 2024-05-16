@@ -77,7 +77,65 @@ func AdminMenu(admin entity.User, hd *handler.Handler) {
 				fmt.Println(err)
 			}
 		case "2":
-			handler.UpdateGame()
+			fmt.Print("Input Game Id to edit:")
+			inputGameId, _ := reader.ReadString('\n')
+			inputGameId = strings.TrimSpace(inputGameId)
+			if inputGameId == "" {
+				fmt.Println("You have to enter a game id")
+				break
+			}
+			gameId, err := strconv.Atoi(input)
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
+			title, price, rating, err := hd.GetGameById(gameId)
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
+
+			fmt.Print("Input New Game Title (Press enter to skip):")
+			inputTitle, _ := reader.ReadString('\n')
+			newTitle := strings.TrimSpace(inputTitle)
+			if newTitle == "" {
+				newTitle = title
+			}
+
+			fmt.Print("Input New Game Price (Press enter to skip):")
+			inputPrice, _ := reader.ReadString('\n')
+			inputPrice = strings.TrimSpace(inputPrice)
+			var newPrice float64
+			if inputPrice == "" {
+				newPrice = price
+			} else {
+				newPrice, err = strconv.ParseFloat(inputPrice, 64)
+				if err != nil {
+					fmt.Println(err)
+					break
+				}
+			}
+
+			fmt.Print("Input New Game Rating (Press enter to skip):")
+			inputRating, _ := reader.ReadString('\n')
+			inputRating = strings.TrimSpace(inputRating)
+			var newRating float64
+			if inputRating == "" {
+				newRating = rating
+			} else {
+				newRating, err = strconv.ParseFloat(inputRating, 64)
+				if err != nil {
+					fmt.Println(err)
+					break
+				}
+			}
+
+			err = hd.UpdateGame(newTitle, newPrice, newRating, gameId)
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
+			fmt.Println("Game successfully updated")
 			utility.EnterToContinue()
 		case "3":
 			handler.DeleteGame()
