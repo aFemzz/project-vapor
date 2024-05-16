@@ -84,32 +84,33 @@ func AdminMenu(admin entity.User, hd *handler.Handler) {
 				fmt.Println("You have to enter a game id")
 				break
 			}
-			gameId, err := strconv.Atoi(input)
+			gameId, err := strconv.Atoi(inputGameId)
 			if err != nil {
 				fmt.Println(err)
 				break
 			}
-			title, price, rating, err := hd.GetGameById(gameId)
+			gameOldData, err := hd.GetGameById(gameId)
 			if err != nil {
 				fmt.Println(err)
 				break
 			}
+			var gameNewData entity.Games
+			gameNewData.GameID = gameOldData.GameID
 
 			fmt.Print("Input New Game Title (Press enter to skip):")
 			inputTitle, _ := reader.ReadString('\n')
-			newTitle := strings.TrimSpace(inputTitle)
-			if newTitle == "" {
-				newTitle = title
+			gameNewData.Title = strings.TrimSpace(inputTitle)
+			if gameNewData.Title == "" {
+				gameNewData.Title = gameOldData.Title
 			}
 
 			fmt.Print("Input New Game Price (Press enter to skip):")
 			inputPrice, _ := reader.ReadString('\n')
 			inputPrice = strings.TrimSpace(inputPrice)
-			var newPrice float64
 			if inputPrice == "" {
-				newPrice = price
+				gameNewData.Price = gameOldData.Price
 			} else {
-				newPrice, err = strconv.ParseFloat(inputPrice, 64)
+				gameNewData.Price, err = strconv.ParseFloat(inputPrice, 64)
 				if err != nil {
 					fmt.Println(err)
 					break
@@ -119,18 +120,17 @@ func AdminMenu(admin entity.User, hd *handler.Handler) {
 			fmt.Print("Input New Game Rating (Press enter to skip):")
 			inputRating, _ := reader.ReadString('\n')
 			inputRating = strings.TrimSpace(inputRating)
-			var newRating float64
 			if inputRating == "" {
-				newRating = rating
+				gameNewData.Rating = gameOldData.Rating
 			} else {
-				newRating, err = strconv.ParseFloat(inputRating, 64)
+				gameNewData.Rating, err = strconv.ParseFloat(inputRating, 64)
 				if err != nil {
 					fmt.Println(err)
 					break
 				}
 			}
 
-			err = hd.UpdateGame(newTitle, newPrice, newRating, gameId)
+			err = hd.UpdateGame(gameNewData)
 			if err != nil {
 				fmt.Println(err)
 				break
