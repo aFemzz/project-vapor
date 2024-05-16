@@ -1,32 +1,22 @@
 package handler
 
 import (
-	"bufio"
-	"database/sql"
 	"fmt"
-	"os"
-	"strings"
 )
 
-func DeleteItemInCart(db *sql.DB, orderID int) {
-	reader := bufio.NewReader(os.Stdin)
-
-	fmt.Print("Please enter the game title you want to delete:")
-	input, _ := reader.ReadString('\n')
-	input = strings.TrimSuffix(input, "\n")
+func (s *Handler) DeleteItemInCart(orderID int, gameTitle string) error {
 
 	query := "SELECT od.order_detail_id FROM games g JOIN order_details od ON g.game_id = od.game_id WHERE g.title = ? AND od.order_id = ?"
 
-	rows, err := db.Query(query, input, orderID)
+	rows, err := s.DB.Query(query, gameTitle, orderID)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return fmt.Errorf("error while get data")
 	}
 	defer rows.Close()
 
 	if !rows.Next() {
-		fmt.Println("There is no such item in your cart")
-		return
+		return fmt.Errorf("there is no such item in your cart")
 	}
 
 	var id int
@@ -36,10 +26,10 @@ func DeleteItemInCart(db *sql.DB, orderID int) {
 
 	query = "DELETE FROM order_details WHERE order_detail_id = ?"
 
-	_, err = db.Exec(query, id)
+	_, err = s.DB.Exec(query, id)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return fmt.Errorf("error while delete data")
 	}
-	fmt.Println("Item deleted successfully")
+
+	return nil
 }
