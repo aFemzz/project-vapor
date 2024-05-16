@@ -1,50 +1,40 @@
 package handler
 
 import (
-	"bufio"
+	"database/sql"
 	"fmt"
-	"os"
-	"strings"
-	"vapor/config"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-func AddAdmin() {
-	db, err := config.GetDB()
-	if err != nil {
-		fmt.Println("Error when connecting to db:", err)
-		return
-	}
-	defer db.Close()
+type Handler struct {
+	DB *sql.DB
+}
 
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("=============================================")
-	fmt.Println("               ADD NEW ADMIN")
-	fmt.Println("=============================================")
-	fmt.Print("Insert admin name: ")
-	username, _ := reader.ReadString('\n')
-	username = strings.TrimSpace(username)
-
-	fmt.Print("Insert admin email: ")
-	email, _ := reader.ReadString('\n')
-	email = strings.TrimSpace(email)
-
-	fmt.Print("Insert admin password: ")
-	password, _ := reader.ReadString('\n')
-	password = strings.TrimSpace(password)
+func (s *Handler) AddAdmin(username, password, email string) error {
 
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		fmt.Println("Error while encrypting password")
-		return
+		return fmt.Errorf("error while encrypting password")
 	}
 
-	_, err = db.Exec("INSERT INTO users (username, password, email, role, saldo) VALUES(?,?,?,?,?)", username, hashedPass, email, "admin", 0.0)
+	// Check if the unique column value already exists
+	var exists bool
+	err = s.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE email = ?)", email).Scan(&exists)
 	if err != nil {
-		fmt.Println("Error when registering user:", err)
-		return
+		return err
 	}
 
-	fmt.Printf("User '%v' added succesfuly!\n", username)
+	// If the unique column value exists, handle it according to your requirements
+	if exists {
+		return fmt.Errorf("data with email '%s' already exists", email)
+	}
+
+	_, err = s.DB.Exec("INSERT INTO users (username, password, email, role, saldo) VALUES(?,?,?,?,?)", username, hashedPass, email, "admin", 0.0)
+	if err != nil {
+		return fmt.Errorf("error when registering user: %v", err)
+	}
+
+	fmt.Printf("Admin '%v' added succesfuly!\n", username)
+	return nil
 }
