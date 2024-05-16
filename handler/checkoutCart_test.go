@@ -24,13 +24,13 @@ func TestCheckoutCart(t *testing.T) {
 
 	orderID := 123
 	totalPrice := 50.0
-	username := "test_user"
+	userID := 1
 
 	rows := sqlmock.NewRows([]string{"saldo"}).
 		AddRow(100.0)
 
 	mock.ExpectQuery("SELECT saldo FROM users").
-		WithArgs(username).
+		WithArgs(userID).
 		WillReturnRows(rows)
 
 	mock.ExpectExec("UPDATE order_details SET is_purchased = 1").
@@ -38,10 +38,10 @@ func TestCheckoutCart(t *testing.T) {
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
 	mock.ExpectExec("UPDATE users SET saldo").
-		WithArgs(totalPrice, username).
+		WithArgs(totalPrice, userID).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
-	newSaldo, err := s.CheckoutCart(orderID, totalPrice, username)
+	newSaldo, err := s.CheckoutCart(orderID, totalPrice, userID)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 50.0, newSaldo)
@@ -58,16 +58,16 @@ func TestCheckoutCart_InsufficientBalance(t *testing.T) {
 
 	orderID := 123
 	totalPrice := 150.0
-	username := "test_user"
+	userID := 1
 
 	rows := sqlmock.NewRows([]string{"saldo"}).
 		AddRow(100.0)
 
 	mock.ExpectQuery("SELECT saldo FROM users").
-		WithArgs(username).
+		WithArgs(userID).
 		WillReturnRows(rows)
 
-	_, err = s.CheckoutCart(orderID, totalPrice, username)
+	_, err = s.CheckoutCart(orderID, totalPrice, userID)
 
 	assert.EqualError(t, err, "you have no enough balance for this transaction, please add your funds")
 }
@@ -83,13 +83,13 @@ func TestCheckoutCart_ErrorQuery(t *testing.T) {
 
 	orderID := 123
 	totalPrice := 50.0
-	username := "test_user"
+	userID := 1
 
 	mock.ExpectQuery("SELECT saldo FROM users").
-		WithArgs(username).
+		WithArgs(userID).
 		WillReturnError(errors.New("database error"))
 
-	_, err = s.CheckoutCart(orderID, totalPrice, username)
+	_, err = s.CheckoutCart(orderID, totalPrice, userID)
 
 	assert.EqualError(t, err, "error while get data")
 }
