@@ -163,7 +163,40 @@ func AdminMenu(admin entity.User, hd *handler.Handler) {
 			fmt.Println("Game successfully deleted")
 			utility.EnterToContinue()
 		case "4":
-			handler.ReportOrder()
+			fmt.Println("Please input range of date report you want")
+			fmt.Print("Input Start Date (YYYY-MM-DD):")
+			inputStart, _ := reader.ReadString('\n')
+			inputStart = strings.TrimSpace(inputStart)
+			if inputStart == "" {
+				fmt.Println("Please input start date")
+				return
+			}
+
+			fmt.Print("Input End Date (YYYY-MM-DD):")
+			inputEnd, _ := reader.ReadString('\n')
+			inputEnd = strings.TrimSpace(inputEnd)
+			if inputEnd == "" {
+				fmt.Println("Please input end date")
+				return
+			}
+			fmt.Println()
+			fmt.Println("=================================================================")
+			fmt.Println("                          ORDER REPORT")
+			fmt.Println("=================================================================")
+			fmt.Println("GAME TITLE           | USERNAME             | DATE             |")
+			reportData, total, err := hd.ReportOrder(inputStart, inputEnd)
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
+			for _, data := range reportData {
+				utility.PrintSpace(data.GameTitle, len("GAME TITLE           "))
+				utility.PrintSpace(data.Username, len(" USERNAME             "))
+				utility.PrintSpace(data.Date, len(" DATE             "))
+				fmt.Println()
+			}
+			fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+			fmt.Printf("Total revenue from %s to %s: %.2f\n", inputStart, inputEnd, total)
 			utility.EnterToContinue()
 		case "5":
 			publisher, err := hd.TopSellingPublisher()
