@@ -33,10 +33,10 @@ func Cart(user entity.User) {
 	var totalPrice float64
 	data := false
 
-	fmt.Println("==========")
-	fmt.Println("   Cart")
-	fmt.Println("==========")
-	fmt.Println("Game Title       | Price     |")
+	fmt.Println("=================================================")
+	fmt.Println("                      CART")
+	fmt.Println("=================================================")
+	fmt.Println("GAME TITLE           | PRICE             |")
 
 	for rows.Next() {
 		data = true
@@ -49,8 +49,8 @@ func Cart(user entity.User) {
 
 		totalPrice += price
 		if !isPurchased {
-			utility.PrintSpace(title, len("Game Title       "))
-			utility.PrintSpace(price, len(" Price     "))
+			utility.PrintSpace(title, len("GAME TITLE           "))
+			utility.PrintSpace(price, len(" PRICE             "))
 			fmt.Println()
 		}
 	}
