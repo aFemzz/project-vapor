@@ -1,94 +1,36 @@
 package handler
 
 import (
-	"bufio"
 	"database/sql"
 	"fmt"
-	"os"
-	"strconv"
-	"strings"
-	"vapor/config"
+	"vapor/entity"
 )
 
-func UpdateGame() {
-	reader := bufio.NewReader(os.Stdin)
-	db, err := config.GetDB()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer db.Close()
-
-	fmt.Print("Input Game Id to edit:")
-	input, _ := reader.ReadString('\n')
-	input = strings.TrimSpace(input)
-	if input == "" {
-		fmt.Println("You have to enter a game id")
-		return
-	}
-	gameId, err := strconv.Atoi(input)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	var title string
-	var price float64
-	var rating float64
+func (s *Handler) GetGameById(gameId int) (entity.Games, error) {
+	var game entity.Games
+	game.GameID = gameId
 
 	query := "SELECT title, price, rating FROM games WHERE game_id=?"
 
-	err = db.QueryRow(query, gameId).Scan(&title, &price, &rating)
+	err := s.DB.QueryRow(query, game.GameID).Scan(&game.Title, &game.Price, &game.Rating)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			fmt.Println("Game not found")
+			return entity.Games{}, fmt.Errorf("game not found")
 		} else {
-			fmt.Println(err)
-		}
-		return
-	}
-
-	fmt.Print("Input New Game Title (Press enter to skip):")
-	inputTitle, _ := reader.ReadString('\n')
-	newTitle := strings.TrimSpace(inputTitle)
-	if newTitle == "" {
-		newTitle = title
-	}
-
-	fmt.Print("Input New Game Price (Press enter to skip):")
-	inputPrice, _ := reader.ReadString('\n')
-	inputPrice = strings.TrimSpace(inputPrice)
-	var newPrice float64
-	if inputPrice == "" {
-		newPrice = price
-	} else {
-		newPrice, err = strconv.ParseFloat(inputPrice, 64)
-		if err != nil {
-			fmt.Println(err)
-			return
+			return entity.Games{}, fmt.Errorf("error while get data")
 		}
 	}
 
-	fmt.Print("Input New Game Rating (Press enter to skip):")
-	inputRating, _ := reader.ReadString('\n')
-	inputRating = strings.TrimSpace(inputRating)
-	var newRating float64
-	if inputRating == "" {
-		newRating = rating
-	} else {
-		newRating, err = strconv.ParseFloat(inputRating, 64)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-	}
+	return game, nil
+}
 
-	query = "UPDATE games SET title=?, price=?, rating=? WHERE game_id=?"
-	_, err = db.Exec(query, newTitle, newPrice, newRating, gameId)
+func (s *Handler) UpdateGame(game entity.Games) error {
+	query := "UPDATE games SET title=?, price=?, rating=? WHERE game_id=?"
+	_, err := s.DB.Exec(query, game.Title, game.Price, game.Rating, game.GameID)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return fmt.Errorf("error while update game")
 	}
 
-	fmt.Println("Game successfully updated")
+	return nil
 }
