@@ -19,9 +19,10 @@ func main() {
 	}
 	defer db.Close()
 
-	svc := &handler.Handler{
+	hd := &handler.Handler{
 		DB: db,
 	}
+
 	for {
 		fmt.Println("Selamat datang di Vapor")
 		fmt.Println()
@@ -42,7 +43,7 @@ func main() {
 			}
 			if user.Role == "admin" {
 				// role admin
-				AdminMenu(user, svc)
+				AdminMenu(user, hd)
 			} else {
 				// role user
 				UserMenu(user)

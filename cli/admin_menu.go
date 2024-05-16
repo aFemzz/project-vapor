@@ -47,7 +47,6 @@ func AdminMenu(admin entity.User, hd *handler.Handler) {
 		case "6":
 			handler.TopSellingPublisher()
 		case "7":
-			reader := bufio.NewReader(os.Stdin)
 			fmt.Println("=============================================")
 			fmt.Println("               ADD NEW ADMIN")
 			fmt.Println("=============================================")
@@ -63,7 +62,6 @@ func AdminMenu(admin entity.User, hd *handler.Handler) {
 			password, _ := reader.ReadString('\n')
 			password = strings.TrimSpace(password)
 
-			// handler.AddAdmin()
 			err := hd.AddAdmin(username, password, email)
 			if err != nil {
 				fmt.Println(err)
