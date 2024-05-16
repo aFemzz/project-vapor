@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"vapor/entity"
 	"vapor/handler"
@@ -12,6 +13,7 @@ import (
 
 func AdminMenu(admin entity.User, hd *handler.Handler) {
 	reader := bufio.NewReader(os.Stdin)
+
 	for {
 		fmt.Println("Welcome Admin,", admin.Username)
 		fmt.Println()
@@ -32,7 +34,48 @@ func AdminMenu(admin entity.User, hd *handler.Handler) {
 		input = strings.TrimSpace(input)
 		switch input {
 		case "1":
-			handler.AddGame()
+			fmt.Println("======================================")
+			fmt.Println("             ADD NEW GAME ")
+			fmt.Println("======================================")
+			var game entity.Games
+			var err error
+			fmt.Print("Insert Game Title: ")
+			game.Title, _ = reader.ReadString('\n')
+			game.Title = strings.TrimSpace(game.Title)
+
+			fmt.Print("Insert Description: ")
+			game.Description, _ = reader.ReadString('\n')
+			game.Description = strings.TrimSpace(game.Description)
+
+			fmt.Print("Insert Game Price : ")
+			price, _ := reader.ReadString('\n')
+			price = strings.TrimSpace(price)
+			game.Price, err = strconv.ParseFloat(price, 64)
+			if err != nil {
+				fmt.Println("Invalid input!!")
+				return
+			}
+
+			fmt.Print("Insert Game Developer : ")
+			game.Developer, _ = reader.ReadString('\n')
+			game.Developer = strings.TrimSpace(game.Developer)
+
+			fmt.Print("Insert Game Publisher : ")
+			game.Publisher, _ = reader.ReadString('\n')
+			game.Publisher = strings.TrimSpace(game.Publisher)
+
+			fmt.Print("Insert Game Rating : ")
+			rating, _ := reader.ReadString('\n')
+			rating = strings.TrimSpace(rating)
+			game.Rating, err = strconv.ParseFloat(rating, 64)
+			if err != nil {
+				fmt.Println("Invalid input!!")
+				return
+			}
+			err = hd.AddGame(game)
+			if err != nil {
+				fmt.Println(err)
+			}
 		case "2":
 			handler.UpdateGame()
 			utility.EnterToContinue()
